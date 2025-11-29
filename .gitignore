@@ -1,0 +1,9 @@
+venv
+__pycache__
+data/
+verify_gpu.py
+verify_dqn.py
+verify_model.py
+debug_rolls.py
+debug_shapes.py
+debug_replay.py
