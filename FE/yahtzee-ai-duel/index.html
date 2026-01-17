@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Strategy Engine | Neural Logic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-deep: #050506;
+        --bg-charcoal: #0e0e11;
+        --accent-teal: #00d9e6;
+        --accent-green: #00e68e;
+        --accent-amber: #e6a500;
+        --text-dim: #475569;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-deep);
+        /* Removed blue tint, replaced with neutral charcoal gradient */
+        background-image: radial-gradient(circle at 50% 0%, #151518 0%, var(--bg-deep) 80%);
+        color: #f1f5f9;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+      }
+
+      .mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 3px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #1f1f23;
+        border-radius: 10px;
+      }
+      
+      @keyframes dice-roll {
+        0% { transform: rotate(0deg) scale(1); filter: blur(0px); }
+        50% { transform: rotate(180deg) scale(1.05); filter: blur(0.5px); }
+        100% { transform: rotate(360deg) scale(1); filter: blur(0px); }
+      }
+
+      .animate-dice {
+        animation: dice-roll 0.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+
+      .glass-surface {
+        background: rgba(14, 14, 17, 0.8);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+      }
+
+      .glow-green { box-shadow: 0 0 15px -5px rgba(0, 230, 142, 0.2); }
+    </style>
+    <script type="importmap">
+    {
+      "imports": {
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react": "https://esm.sh/react@^19.2.3",
+        "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+      }
+    }
+    </script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

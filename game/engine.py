@@ -85,9 +85,9 @@ class GameEngine:
 
                 # Reward is the difference between potential scores
                 delta = potential_after - potential_before 
-                
                 if delta > 0:
-                    reward = delta * 0.2
+                    reward = delta * 0.1
+
             else:
                 # Invalid roll action (no rolls left)
                 reward = -10 # Penalty for invalid actio

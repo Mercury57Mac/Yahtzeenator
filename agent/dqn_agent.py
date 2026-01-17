@@ -55,9 +55,10 @@ class DQNAgent(BaseAgent):
         # Upper progress: 1 input (normalized)
         # Total approx: 30 + 13 + 4 + 1 = 48
         # State: 5 dice (one-hot) + 13 scorecard slots (binary) + rolls_left (one-hot) + upper_progress (norm) + 13 potential scores (norm)
-        # 30 + 13 + 4 + 1 + 13 = 61
+        #        + 6 dice counts + 1 sum + 2 straights + 1 max freq + 1 turn + 1 upper diff
+        # 30 + 13 + 4 + 1 + 13 + 6 + 1 + 2 + 1 + 1 + 1 = 73
         if self.state_size == 0:
-            self.state_size = 61 
+            self.state_size = 73 
 
         # Pre-allocate memory for faster access (Now that state_size is known)
         self.state_memory = np.zeros((self.mem_size, self.state_size), dtype=np.float32)
@@ -266,7 +267,57 @@ class DQNAgent(BaseAgent):
                 score = self.scorecard_helper.score_category(cat, current_dice)
                 potential_scores.append(score / 50.0) # Normalize (max score is 50 for Yahtzee)
         
-        return np.array(dice_vec + score_vec + rolls_vec + upper_vec + potential_scores)
+        # 6. Dice Counts (Normalized by 5)
+        # Count how many of each face value we have
+        counts = [0] * 7 # indices 0-6, ignore 0
+        for d in dice:
+            if d > 0: counts[d] += 1
+        counts_vec = [c / 5.0 for c in counts[1:]] # 6 features
+
+        # 7. Sum of Dice (Normalized by 30)
+        dice_sum = sum(dice)
+        sum_vec = [dice_sum / 30.0]
+
+        # 8. Straight Indicators
+        # Small Straight (4 consecutive)
+        # Large Straight (5 consecutive)
+        unique_dice = sorted(list(set([d for d in dice if d > 0])))
+        consecutive_count = 0
+        max_consecutive = 0
+        if len(unique_dice) > 0:
+            consecutive_count = 1
+            max_consecutive = 1
+            for i in range(len(unique_dice) - 1):
+                if unique_dice[i+1] == unique_dice[i] + 1:
+                    consecutive_count += 1
+                    max_consecutive = max(max_consecutive, consecutive_count)
+                else:
+                    consecutive_count = 1
+        
+        has_small_straight = 1.0 if max_consecutive >= 4 else 0.0
+        has_large_straight = 1.0 if max_consecutive >= 5 else 0.0
+        straights_vec = [has_small_straight, has_large_straight]
+
+        # 9. Max Frequency (Normalized by 5)
+        # Useful for 3/4 of a kind, Yahtzee, Full House
+        max_freq = max(counts[1:]) if any(counts[1:]) else 0
+        freq_vec = [max_freq / 5.0]
+
+        # 10. Turn Number (Normalized by 13)
+        current_turn = state.get("current_turn", 1)
+        turn_vec = [current_turn / 13.0]
+
+        # 11. Upper Bonus Difference (Normalized by 63)
+        # How far are we from the bonus?
+        # If we are at 40, diff is 23. If at 70, diff is -7 (capped at 0 maybe? or let it be negative?)
+        # Let's use signed distance normalized. 
+        # If we have 0, distance is 63. If we have 63, distance is 0.
+        # Range could be approx -30 to 63.
+        dist_to_bonus = (63 - upper_prog) / 63.0
+        bonus_diff_vec = [dist_to_bonus]
+
+        return np.array(dice_vec + score_vec + rolls_vec + upper_vec + potential_scores + 
+                        counts_vec + sum_vec + straights_vec + freq_vec + turn_vec + bonus_diff_vec)
 
     def _get_valid_actions(self, state: Dict) -> List[int]:
         """

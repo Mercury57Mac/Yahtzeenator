@@ -1,0 +1,6 @@
+
+{
+  "name": "Yahtzee AI Duel",
+  "description": "A sleek, modern Yahtzee game where you compete against a neural-network powered AI. Features a minimalist aesthetic, real-time score tracking, and AI-driven strategy analysis.",
+  "requestFramePermissions": []
+}

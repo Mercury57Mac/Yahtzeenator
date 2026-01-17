@@ -3,3 +3,6 @@ tensorflow-macos
 tensorflow-metal
 matplotlib
 optuna
+fastapi
+uvicorn
+pydantic
